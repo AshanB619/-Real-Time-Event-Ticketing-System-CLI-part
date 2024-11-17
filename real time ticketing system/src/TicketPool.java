@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.*;
 
-public class TicketPool  {
+public class TicketPool implements Ticket_pool_operation  {
     private final List<Integer> ticket_list; //list for store tickets
     private final int max_Ticket_Capacity_For_Pool; //variable for maximum tickets that pool can hold
 
@@ -12,7 +12,7 @@ public class TicketPool  {
     }
 
     // use synchronized for thread safety
-    public synchronized void Add_Ticket(int Ticket_Number)throws Exception{
+    public synchronized void Add_Ticket(int Ticket_Number)throws InterruptedException{
         while(ticket_list.size() >= max_Ticket_Capacity_For_Pool) { //check current size of ticket list
             wait(); // if current size is grater than max capacity put the current thread into waiting list
         }
