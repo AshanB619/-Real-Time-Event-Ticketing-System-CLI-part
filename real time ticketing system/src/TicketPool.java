@@ -22,7 +22,7 @@ public class TicketPool  {
 
     }
     // use synchronized for thread safety
-    public synchronized int Release_Ticket()throws Exception{
+    public synchronized int Release_Ticket()throws InterruptedException{
         while (ticket_list.size() <=0){ //check is list is empty
             wait(); // make thread wait until new ticket is added
         }
