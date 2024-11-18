@@ -1,7 +1,7 @@
 public class Vendor extends Thread {
     private final Ticket_pool_operation Vendor_Ticket_pool;
     private final int release_Rate; //release rate
-    private final int total_Tickets;//total ticket vendor can release at atime
+    private final int total_Tickets;//total ticket
 
 
     public Vendor(Ticket_pool_operation Vendor_Ticket_pool, int release_Rate, int total_Tickets) {
@@ -9,6 +9,8 @@ public class Vendor extends Thread {
         this.release_Rate = release_Rate;
         this.total_Tickets = total_Tickets;
     }
+
+
     @Override
     public void run() {
         try {
@@ -17,12 +19,13 @@ public class Vendor extends Thread {
                 //add vendors ticket to ticketpool
                 Vendor_Ticket_pool.Add_Ticket(i);
                 //pause the thread for specific time
-                Thread.sleep(2000/release_Rate);
+                Thread.sleep(1000);
             }
         }catch (Exception e){
             System.out.println("Thread interrupted due to  |"+e.getMessage());//if their any exception show to user
             Thread.currentThread().interrupt();//make thread Interrupt if there is any error
         }
     }
+
 
 }
