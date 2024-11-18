@@ -17,10 +17,10 @@ public class Vendor extends Thread {
                 //add vendors ticket to ticketpool
                 Vendor_Ticket_pool.Add_Ticket(i);
                 //pause the thread for specific time
-                Thread.sleep(release_Rate);
+                Thread.sleep(2000/release_Rate);
             }
         }catch (Exception e){
-            System.out.println("Thread interrupted due to |"+e.getMessage());//if their any exception show to user
+            System.out.println("Thread interrupted due to  |"+e.getMessage());//if their any exception show to user
             Thread.currentThread().interrupt();//make thread Interrupt if there is any error
         }
     }
