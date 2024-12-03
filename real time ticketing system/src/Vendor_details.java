@@ -3,6 +3,12 @@ public class Vendor_details {
     private int vendor_Id;
     private int total_ticket_by_vendor;
 
+    public Vendor_details(String vendorName, int vendorId){
+        this.vendor_Name = vendorName;
+        this.vendor_Id = vendorId;
+
+    }
+
 
     public String getVendorName() {
         return vendor_Name;
