@@ -1,87 +1,119 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner_main = new Scanner(System.in);
-        SystemConfig config1 = new SystemConfig();
+        Scanner scanner = new Scanner(System.in);
+        SystemConfig config = new SystemConfig();
+
+        // Input for total tickets
         while (true) {
             try {
                 System.out.println("Enter total number of tickets to sell:");
-                int totalTicket = Integer.parseInt(scanner_main.nextLine());
-                if (totalTicket <= 0) {
+                int totalTickets = Integer.parseInt(scanner.nextLine());
+                if (totalTickets <= 0) {
                     System.out.println("Enter a positive number.");
                     continue;
                 }
-                config1.setTotal_Number_of_Tickets(totalTicket);
+                config.setTotal_Number_of_Tickets(totalTickets);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. You need to Enter Integer value");
+                System.out.println("Invalid input. Please enter an integer value.");
             }
         }
 
+        // Input for release rate
         while (true) {
             try {
-                System.out.println("Enter Release rate (per second):");
-                int release_rate = Integer.parseInt(scanner_main.nextLine());
-                if (release_rate <= 0) {
+                System.out.println("Enter release rate (per second):");
+                int releaseRate = Integer.parseInt(scanner.nextLine());
+                if (releaseRate <= 0) {
                     System.out.println("Enter a positive number.");
                     continue;
                 }
-                config1.setTickets_Release_rate(release_rate);
+                config.setTickets_Release_rate(releaseRate);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. You need to enter an integer value.");
+                System.out.println("Invalid input. Please enter an integer value.");
             }
         }
 
+        // Input for retrieve rate
         while (true) {
             try {
-                System.out.println("Enter Retrieve rate (per second):");
-                int retrieve_rate = Integer.parseInt(scanner_main.nextLine());
-                if (retrieve_rate <= 0) {
+                System.out.println("Enter retrieve rate (per second):");
+                int retrieveRate = Integer.parseInt(scanner.nextLine());
+                if (retrieveRate <= 0) {
                     System.out.println("Enter a positive number.");
                     continue;
                 }
-                config1.setCustomer_Retrieval_Rate(retrieve_rate);
+                config.setCustomer_Retrieval_Rate(retrieveRate);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. You need to enter an integer value.");
+                System.out.println("Invalid input. Please enter an integer value.");
             }
         }
 
+        // Input for maximum ticket capacity
         while (true) {
             try {
                 System.out.println("Enter maximum ticket capacity that the system can handle:");
-                int maximum_ticket_capacity = Integer.parseInt(scanner_main.nextLine());
-                if (maximum_ticket_capacity <= 0) {
+                int maxCapacity = Integer.parseInt(scanner.nextLine());
+                if (maxCapacity <= 0) {
                     System.out.println("Enter a positive number.");
                     continue;
                 }
-                config1.setMaximum_Ticket_Capacity(maximum_ticket_capacity);
+                config.setMaximum_Ticket_Capacity(maxCapacity);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. You need to enter an integer value.");
+                System.out.println("Invalid input. Please enter an integer value.");
             }
         }
 
+        // Ticket pool setup
+        Ticket_pool_operation ticketPool = new TicketPool(config.getMaximum_Ticket_Capacity());
 
+        // Manage multiple vendors
+        List<Vendor> vendors = new ArrayList<>();
+        while (true) {
+            try {
+                System.out.println("Enter vendor name:");
+                String vendorName = scanner.nextLine();
+                System.out.println("Enter vendor ID:");
+                int vendorId = Integer.parseInt(scanner.nextLine());
+                System.out.println("Enter vendor email:");
+                String vendorEmail = scanner.nextLine();
+                System.out.println("Enter tickets vendor wants to sell:");
+                int ticketsToSell = Integer.parseInt(scanner.nextLine());
 
-        Ticket_pool_operation ticket_pool_operation= new TicketPool(config1.getMaximum_Ticket_Capacity());
+                if (ticketsToSell > config.getTotal_Number_of_Tickets()) {
+                    System.out.println("Tickets exceed total available tickets. Try again.");
+                    continue;
+                }
 
-        Vendor vendor1=new Vendor(ticket_pool_operation,config1.getTickets_Release_rate(),config1.getTotal_Number_of_Tickets());
-        Customer customer1=new Customer(ticket_pool_operation,config1.getCustomer_Retrieval_Rate());
+                // Deduct tickets from total
+                config.setTotal_Number_of_Tickets(config.getTotal_Number_of_Tickets() - ticketsToSell);
 
-        vendor1.start();
-        customer1.start();
+                // Create and start vendor thread
+                Vendor vendor = new Vendor(ticketPool, config.getTickets_Release_rate(), ticketsToSell,
+                        vendorName, vendorId, vendorEmail);
+                vendors.add(vendor);
+                vendor.start();
 
+                // Option to add more vendors
+                System.out.println("Do you want to add another vendor? (yes/no):");
+                String response = scanner.nextLine();
+                if (response.equalsIgnoreCase("no")) {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter an integer value.");
+            }
+        }
 
-
-
-
-
-
-
-
-
+        // Start customer thread
+        Customer customer = new Customer(ticketPool, config.getCustomer_Retrieval_Rate());
+        customer.start();
     }
 }

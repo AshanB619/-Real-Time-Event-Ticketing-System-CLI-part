@@ -7,7 +7,7 @@ public class TicketPool implements Ticket_pool_operation  {
 
 
     public TicketPool( int maxTickekCapacityForPool) {
-        this.ticket_list = new ArrayList<>();
+        this.ticket_list = new ArrayList<>(maxTickekCapacityForPool);
         this.max_Ticket_Capacity_For_Pool = maxTickekCapacityForPool;
     }
 
@@ -25,6 +25,7 @@ public class TicketPool implements Ticket_pool_operation  {
     public synchronized int Release_Ticket()throws InterruptedException{
         while (ticket_list.size() <=0){ //check is list is empty
             wait(); // make thread wait until new ticket is added
+
         }
         int Ticket_Number = ticket_list.remove(0); //remove first ticket in list
         System.out.println("Ticket_Number "+Ticket_Number+" sold |"+ ticket_list.size()+" Tickets available");

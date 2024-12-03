@@ -18,7 +18,7 @@ public class Customer extends Thread {
                 int ticket_number=Customer_ticket_pool.Release_Ticket(); //get the ticket number of released ticket
                 System.out.println("Ticket number: "+ticket_number+" Sold");//show its to user
                 //pause the thread for specific time
-                Thread.sleep(1000);
+                Thread.sleep(retrieval_Rate * 1000L);
 
             }
 
