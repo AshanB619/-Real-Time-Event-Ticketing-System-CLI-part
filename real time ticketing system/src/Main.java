@@ -107,9 +107,9 @@ public class Main {
         }
 
         Customer customer1=new Customer(ticket_pool_operation,config1.getCustomer_Retrieval_Rate());
-        Vendor vendor1=new Vendor(ticket_pool_operation,config1.getTickets_Release_rate(),config1.getTotal_Number_of_Tickets());
-
-        vendor1.start();
+        Vendor vendor1=new Vendor(ticket_pool_operation,config1.getTickets_Release_rate(), vendor_details1.getTotalTicketByVendor(),vendor_details1.getVendorName(),vendor_details1.getVendorId());
+        Thread vendor_thread=new Thread(vendor1);
+        vendor_thread.start();
         customer1.start();
 
 

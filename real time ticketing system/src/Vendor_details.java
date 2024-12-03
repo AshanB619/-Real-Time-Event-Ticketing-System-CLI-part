@@ -8,6 +8,9 @@ public class Vendor_details {
         this.vendor_Id = vendorId;
 
     }
+    public Vendor_details(){
+
+    }
 
 
     public String getVendorName() {

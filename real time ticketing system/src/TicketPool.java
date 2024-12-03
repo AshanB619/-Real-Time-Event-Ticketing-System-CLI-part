@@ -17,7 +17,7 @@ public class TicketPool implements Ticket_pool_operation  {
             wait(); // if current size is grater than max capacity put the current thread into waiting list
         }
         ticket_list.add(Ticket_Number); //add ticket into list
-        System.out.println("Ticket_Number "+Ticket_Number+" added to the pool |"+ ticket_list.size()+" Tickets available");
+        System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available");
         notifyAll(); //notify waiting threads.
 
     }
