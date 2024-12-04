@@ -8,6 +8,7 @@ public class Main {
         SystemConfig config1 = get_ticket_inputs(scanner_main);
         Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
         List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main);
+        List<Customer_details> customer_details_List = get_Customer_Details(scanner_main);
         for (Vendor_details vendor_details_for : vendor_details_List) {
             Vendor vendor1 = new Vendor(
                     ticket_pool_operation,
@@ -19,9 +20,9 @@ public class Main {
             Thread vendor_Thread = new Thread(vendor1);
             vendor_Thread.start();
         }
-        List<Customer_details> customer_details_List = get_Customer_Details(scanner_main);
+
         for (Customer_details customer_details_for : customer_details_List) {
-            Customer customer = new Customer(
+            Customer customer1 = new Customer(
                     ticket_pool_operation,
                     config1.getCustomer_Retrieval_Rate(),
                     customer_details_for.getTotalTicketToBuy(),
@@ -29,7 +30,7 @@ public class Main {
                     customer_details_for.getCustomerId()
 
             );
-            Thread customer_Thread = new Thread(customer);
+            Thread customer_Thread = new Thread(customer1);
             customer_Thread.start();
         }
 

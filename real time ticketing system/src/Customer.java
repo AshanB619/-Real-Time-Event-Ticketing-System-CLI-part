@@ -18,8 +18,7 @@ public class Customer extends Customer_details implements Runnable {
                 if (Thread.currentThread().isInterrupted()) {
                     break;
                 }
-                int ticket_number = Customer_ticket_pool.Release_Ticket();
-                System.out.println("Customer ID: " + getCustomerId() + ", Customer Name: " + getCustomerName() + " bought ticket number: " + ticket_number);
+                int ticket_number = Customer_ticket_pool.Release_Ticket( "Customer ID: " + getCustomerId() + ", Customer Name: " + getCustomerName());
                 Thread.sleep(retrieval_Rate * 1000L);
             }
         } catch (InterruptedException e) {

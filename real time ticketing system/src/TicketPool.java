@@ -22,13 +22,13 @@ public class TicketPool implements Ticket_pool_operation  {
 
     }
     // use synchronized for thread safety
-    public synchronized int Release_Ticket()throws InterruptedException{
+    public synchronized int Release_Ticket(String Customer_details)throws InterruptedException{
         while (ticket_list.size() <=0){ //check is list is empty
             wait(); // make thread wait until new ticket is added
 
         }
         int Ticket_Number = ticket_list.remove(0); //remove first ticket in list
-        System.out.println("Ticket_Number "+Ticket_Number+" sold |"+ ticket_list.size()+" Tickets available");
+        System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Customer_details + " | " + ticket_list.size() + " Tickets available");
         notifyAll();//notify waiting threads.
         return Ticket_Number; // return ticket number that sold
     }
