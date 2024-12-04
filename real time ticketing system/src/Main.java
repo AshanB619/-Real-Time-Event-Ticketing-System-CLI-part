@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -6,7 +5,28 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner_main = new Scanner(System.in);
+        SystemConfig config1 = get_ticket_inputs(scanner_main);
+        Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
+        List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main);
+        for (Vendor_details vendor_details_for : vendor_details_List) {
+            Vendor vendor = new Vendor(
+                    ticket_pool_operation,
+                    config1.getTickets_Release_rate(),
+                    vendor_details_for.getTotalTicketByVendor(),
+                    vendor_details_for.getVendorName(),
+                    vendor_details_for.getVendorId()
+            );
+            Thread vendor_Thread = new Thread(vendor);
+            vendor_Thread.start();
+        }
+
+        Customer customer1 = new Customer(ticket_pool_operation, config1.getCustomer_Retrieval_Rate());
+        customer1.start();
+    }
+
+    private static SystemConfig get_ticket_inputs(Scanner scanner_main) {
         SystemConfig config1 = new SystemConfig();
+
         while (true) {
             try {
                 System.out.println("Enter total number of tickets to sell:");
@@ -67,13 +87,16 @@ public class Main {
             }
         }
 
+        return config1;
+    }
 
-
-        Ticket_pool_operation ticket_pool_operation= new TicketPool(config1.getMaximum_Ticket_Capacity());
+    private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main) {
         List<Vendor_details> vendor_details_List = new ArrayList<>();
-        boolean for_more_vendors=true;
+        boolean for_more_vendors = true;
+
         while (for_more_vendors) {
             Vendor_details vendor_details = new Vendor_details();
+
             while (true) {
                 System.out.println("Enter Vendor Name:");
                 String vendor_name = scanner_main.nextLine();
@@ -84,6 +107,7 @@ public class Main {
                 vendor_details.setVendor_Name(vendor_name);
                 break;
             }
+
             while (true) {
                 try {
                     System.out.println("Enter Vendor ID:");
@@ -94,6 +118,7 @@ public class Main {
                     System.out.println("!Invalid input!--|You need to Enter Integer value|");
                 }
             }
+
             while (true) {
                 try {
                     System.out.println("Enter Total Tickets number you want to sell:");
@@ -108,44 +133,23 @@ public class Main {
                     System.out.println("!Invalid input!--|You need to Enter Integer value|");
                 }
             }
+
             vendor_details_List.add(vendor_details);
-            while (true){
+
+            while (true) {
                 System.out.println("Do you want to add another vendor|yes/no|");
-                String add_more_vendors=scanner_main.nextLine().toLowerCase();
-                if(add_more_vendors.equals("no")){
-                    for_more_vendors=false;
+                String add_more_vendors = scanner_main.nextLine().toLowerCase();
+                if (add_more_vendors.equals("no")) {
+                    for_more_vendors = false;
+                    break;
                 } else if (add_more_vendors.equals("yes")) {
-                    for_more_vendors=true;
-                }else{
+                    break;
+                } else {
                     System.out.println("!!!you can enter yes or no only!!!");
-                    continue;
                 }
-                break;
             }
-
         }
-        for (Vendor_details vendor_details_for : vendor_details_List) {
-            Vendor vendor = new Vendor(
-                    ticket_pool_operation,
-                    config1.getTickets_Release_rate(),
-                    vendor_details_for.getTotalTicketByVendor(),
-                    vendor_details_for.getVendorName(),
-                    vendor_details_for.getVendorId()
-            );
-            Thread vendor_Thread = new Thread(vendor);
-            vendor_Thread.start();
-        }
-        Customer customer1=new Customer(ticket_pool_operation,config1.getCustomer_Retrieval_Rate());
-        customer1.start();
 
-
-
-
-
-
-
-
-
-
+        return vendor_details_List;
     }
 }
