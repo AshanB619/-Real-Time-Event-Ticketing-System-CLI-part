@@ -1,31 +1,31 @@
-public class Customer extends Thread {
+public class Customer extends Customer_details implements Runnable {
     private final Ticket_pool_operation Customer_ticket_pool;
     private final int retrieval_Rate; //retrieval rate of the customer
+    private final int total_Tickets_to_buy;
 
 
-    public Customer(Ticket_pool_operation Customer_ticket_pool, int retrieval_Rate) {
+    public Customer(Ticket_pool_operation Customer_ticket_pool, int retrieval_Rate,int total_Tickets,String customer_Name,int Customer_id) {
+        super(customer_Name,Customer_id);
         this.Customer_ticket_pool = Customer_ticket_pool;
         this.retrieval_Rate = retrieval_Rate;
+        this.total_Tickets_to_buy = total_Tickets;
     }
 
+    @Override
     public void run() {
         try {
-            while (true){
-                if (Thread.currentThread().isInterrupted()) { //check whether thread is interrupted
-                    break; //if thread id interrupted use break
+            for (int i = 1; i <= total_Tickets_to_buy; i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    break;
                 }
-                //retrieve ticket from list
-                int ticket_number=Customer_ticket_pool.Release_Ticket(); //get the ticket number of released ticket
-                //pause the thread for specific time
+                int ticket_number = Customer_ticket_pool.Release_Ticket();
+                System.out.println("Customer ID: " + getCustomerId() + ", Customer Name: " + getCustomerName() + " bought ticket number: " + ticket_number);
                 Thread.sleep(retrieval_Rate * 1000L);
-
             }
-
-        }catch (InterruptedException e){
-            System.out.println("Thread interrupted due to |"+e.getMessage());//if their any exception show to user
-            Thread.currentThread().interrupt();//make thread Interrupt if there is any error
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted due to |" + e.getMessage());
+            Thread.currentThread().interrupt();
         }
-
     }
 
 }
