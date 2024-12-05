@@ -8,7 +8,7 @@ public class Main {
         SystemConfig config1 = get_ticket_inputs(scanner_main);
         Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
         List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main,config1);
-        List<Customer_details> customer_details_List = get_Customer_Details(scanner_main);
+        List<Customer_details> customer_details_List = get_Customer_Details(scanner_main,config1);
 
         for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
         for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
@@ -81,7 +81,7 @@ public class Main {
         return config1;
     }
 
-    private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main,SystemConfig config) {
+    private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main,SystemConfig config2) {
         List<Vendor_details> vendor_details_List = new ArrayList<>();
         boolean for_more_vendors = true;
 
@@ -112,18 +112,18 @@ public class Main {
 
             while (true) {
                 try {
-                    System.out.println("Total Ticket Remaining "+config.getTotal_Number_of_Tickets());
+                    System.out.println("Total Ticket Remaining "+config2.getTotal_Number_of_Tickets());
                     System.out.println("Enter Total Tickets number you want to sell:");
                     int vendor_ticket_number_for_vendor = Integer.parseInt(scanner_main.nextLine());
                     if (vendor_ticket_number_for_vendor <= 0) {
                         System.out.println("Enter a positive number.");
                         continue;
                     }
-                    if (vendor_ticket_number_for_vendor>config.getTotal_Number_of_Tickets()){
-                        System.out.println("!!!You can buy only "+config.getTotal_Number_of_Tickets()+" tickets!!!");
+                    if (vendor_ticket_number_for_vendor>config2.getTotal_Number_of_Tickets()){
+                        System.out.println("!!!You can sell only "+config2.getTotal_Number_of_Tickets()+" tickets!!!");
                         continue;
                     }
-                    config.find_Remaining_Total_Tickets(vendor_ticket_number_for_vendor);
+                    config2.find_Remaining_Total_Tickets_for_vendor(vendor_ticket_number_for_vendor);
                     vendor_details.setTotalTicketByVendor(vendor_ticket_number_for_vendor);
                     break;
                 } catch (NumberFormatException e) {
@@ -150,12 +150,13 @@ public class Main {
         return vendor_details_List;
     }
 
-    private static List<Customer_details>get_Customer_Details(Scanner scanner_main) {
+    private static List<Customer_details> get_Customer_Details(Scanner scanner_main, SystemConfig config) {
         List<Customer_details> customer_details_List = new ArrayList<>();
         boolean for_more_customers = true;
 
         while (for_more_customers) {
             Customer_details customer_details = new Customer_details();
+
             while (true) {
                 System.out.println("Enter Customer Name:");
                 String customer_name = scanner_main.nextLine();
@@ -166,32 +167,44 @@ public class Main {
                 customer_details.setCustomer_Name(customer_name);
                 break;
             }
+
             while (true) {
                 try {
                     System.out.println("Enter Customer ID:");
                     int customer_id = Integer.parseInt(scanner_main.nextLine());
                     customer_details.setCustomerId(customer_id);
                     break;
-                }
-                catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     System.out.println("!Invalid input!--|You need to Enter Integer value|");
                 }
             }
+
             while (true) {
                 try {
+                    int Max_ticket_for_customer= config.getTicket_Availability_for_customer();
+                    System.out.println("Total Tickets Remaining: " + Max_ticket_for_customer);
                     System.out.println("Enter Total Tickets number you want to buy:");
                     int total_ticket_number_for_customer = Integer.parseInt(scanner_main.nextLine());
+
                     if (total_ticket_number_for_customer <= 0) {
                         System.out.println("Enter a positive number.");
                         continue;
                     }
+                    if (total_ticket_number_for_customer > Max_ticket_for_customer) {
+                        System.out.println("!!!You can only buy up to " + Max_ticket_for_customer + " tickets!!!");
+                        continue;
+                    }
+
+                    config.find_Remaining_Total_Tickets_for_customer(total_ticket_number_for_customer);
                     customer_details.setTotalTicketToBuy(total_ticket_number_for_customer);
                     break;
-                }catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     System.out.println("!Invalid input!--|You need to Enter Integer value|");
                 }
             }
+
             customer_details_List.add(customer_details);
+
             while (true) {
                 System.out.println("Do you want to add another Customer|yes/no|");
                 String add_more_customers = scanner_main.nextLine().toLowerCase();
@@ -200,15 +213,14 @@ public class Main {
                     break;
                 } else if (add_more_customers.equals("yes")) {
                     break;
-
-                }else{
-                    System.out.println("!!!you can enter yes or no only!!!");
+                } else {
+                    System.out.println("!!!You can enter yes or no only!!!");
                 }
             }
         }
         return customer_details_List;
-
     }
+
 
     private static void for_Vendor_Threads(List<Vendor_details> vendor_details_List,
                                            Ticket_pool_operation ticket_pool_operation,
