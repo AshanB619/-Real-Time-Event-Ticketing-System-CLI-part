@@ -7,12 +7,11 @@ public class Main {
         Scanner scanner_main = new Scanner(System.in);
         SystemConfig config1 = get_ticket_inputs(scanner_main);
         Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
-        List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main);
+        List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main,config1);
         List<Customer_details> customer_details_List = get_Customer_Details(scanner_main);
 
         for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
         for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
-
 
     }
 
@@ -82,7 +81,7 @@ public class Main {
         return config1;
     }
 
-    private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main) {
+    private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main,SystemConfig config) {
         List<Vendor_details> vendor_details_List = new ArrayList<>();
         boolean for_more_vendors = true;
 
@@ -113,12 +112,18 @@ public class Main {
 
             while (true) {
                 try {
+                    System.out.println("Total Ticket Remaining "+config.getTotal_Number_of_Tickets());
                     System.out.println("Enter Total Tickets number you want to sell:");
                     int vendor_ticket_number_for_vendor = Integer.parseInt(scanner_main.nextLine());
                     if (vendor_ticket_number_for_vendor <= 0) {
                         System.out.println("Enter a positive number.");
                         continue;
                     }
+                    if (vendor_ticket_number_for_vendor>config.getTotal_Number_of_Tickets()){
+                        System.out.println("!!!You can buy only "+config.getTotal_Number_of_Tickets()+" tickets!!!");
+                        continue;
+                    }
+                    config.find_Remaining_Total_Tickets(vendor_ticket_number_for_vendor);
                     vendor_details.setTotalTicketByVendor(vendor_ticket_number_for_vendor);
                     break;
                 } catch (NumberFormatException e) {

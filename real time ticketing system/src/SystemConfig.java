@@ -4,12 +4,14 @@ public class SystemConfig {
     private int Customer_Retrieval_Rate;
     private int Maximum_Ticket_Capacity;
 
+
     public int getTotal_Number_of_Tickets() {
         return Total_Number_of_Tickets;
     }
 
     public void setTotal_Number_of_Tickets(int total_Number_of_Tickets) {
         this.Total_Number_of_Tickets = total_Number_of_Tickets;
+
     }
 
     public int getTickets_Release_rate() {
@@ -31,5 +33,11 @@ public class SystemConfig {
     public void setMaximum_Ticket_Capacity(int maximum_Ticket_Capacity) {
         this.Maximum_Ticket_Capacity = maximum_Ticket_Capacity;
     }
+
+    public void find_Remaining_Total_Tickets(int ticket_Amount) {
+        this.Total_Number_of_Tickets-=ticket_Amount;
+    }
+
+
 
 }
