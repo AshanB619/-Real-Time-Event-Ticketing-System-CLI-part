@@ -9,30 +9,10 @@ public class Main {
         Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
         List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main);
         List<Customer_details> customer_details_List = get_Customer_Details(scanner_main);
-        for (Vendor_details vendor_details_for : vendor_details_List) {
-            Vendor vendor1 = new Vendor(
-                    ticket_pool_operation,
-                    config1.getTickets_Release_rate(),
-                    vendor_details_for.getTotalTicketByVendor(),
-                    vendor_details_for.getVendorName(),
-                    vendor_details_for.getVendorId()
-            );
-            Thread vendor_Thread = new Thread(vendor1);
-            vendor_Thread.start();
-        }
 
-        for (Customer_details customer_details_for : customer_details_List) {
-            Customer customer1 = new Customer(
-                    ticket_pool_operation,
-                    config1.getCustomer_Retrieval_Rate(),
-                    customer_details_for.getTotalTicketToBuy(),
-                    customer_details_for.getCustomerName(),
-                    customer_details_for.getCustomerId()
+        for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
+        for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
 
-            );
-            Thread customer_Thread = new Thread(customer1);
-            customer_Thread.start();
-        }
 
     }
 
@@ -224,6 +204,41 @@ public class Main {
         return customer_details_List;
 
     }
+
+    private static void for_Vendor_Threads(List<Vendor_details> vendor_details_List,
+                                           Ticket_pool_operation ticket_pool_operation,
+                                           SystemConfig system_config) {
+        for (Vendor_details vendor_details_for : vendor_details_List) {
+            Vendor vendor1 = new Vendor(
+                    ticket_pool_operation,
+                    system_config.getTickets_Release_rate(),
+                    vendor_details_for.getTotalTicketByVendor(),
+                    vendor_details_for.getVendorName(),
+                    vendor_details_for.getVendorId()
+            );
+            Thread vendor_Thread = new Thread(vendor1);
+            vendor_Thread.start();
+        }
+    }
+
+    private static void for_Customer_Threads(List<Customer_details> customer_details_List,
+                                           Ticket_pool_operation ticket_pool_operation,
+                                           SystemConfig system_config) {
+        for (Customer_details customer_details_for : customer_details_List) {
+            Customer customer1 = new Customer(
+                    ticket_pool_operation,
+                    system_config.getCustomer_Retrieval_Rate(),
+                    customer_details_for.getTotalTicketToBuy(),
+                    customer_details_for.getCustomerName(),
+                    customer_details_for.getCustomerId()
+
+            );
+            Thread customer_Thread = new Thread(customer1);
+            customer_Thread.start();
+        }
+    }
+
+
 
 
 }
