@@ -4,6 +4,8 @@ public class SystemConfig {
     private int Customer_Retrieval_Rate;
     private int Maximum_Ticket_Capacity;
     private int Ticket_Availability_for_customer;
+    private int Total_ticket_that_vendors_sell=0;
+
 
 
     public int getTotal_Number_of_Tickets() {
@@ -16,7 +18,7 @@ public class SystemConfig {
 
     }
     public int getTicket_Availability_for_customer(){
-        return Ticket_Availability_for_customer;
+        return Total_ticket_that_vendors_sell;
     }
 
     public int getTickets_Release_rate() {
@@ -41,9 +43,10 @@ public class SystemConfig {
 
     public void find_Remaining_Total_Tickets_for_vendor(int ticket_Amount) {
         this.Total_Number_of_Tickets-=ticket_Amount;
+        this.Total_ticket_that_vendors_sell+=ticket_Amount;
     }
     public void find_Remaining_Total_Tickets_for_customer(int ticket_Amount) {
-        this.Ticket_Availability_for_customer-= ticket_Amount;
+        this.Total_ticket_that_vendors_sell-=ticket_Amount;
     }
 
 }
