@@ -1,5 +1,8 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
+
 
 public class TicketPool implements Ticket_pool_operation  {
     private final List<Integer> ticket_list; //list for store tickets
@@ -19,7 +22,8 @@ public class TicketPool implements Ticket_pool_operation  {
             wait(); // if current size is grater than max capacity put the current thread into waiting list
         }
         ticket_list.add(Ticket_Number); //add ticket into list
-        System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available");
+        String date_time_for_add=get_Time_Date();
+        System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available |"+date_time_for_add+"|");
         notifyAll(); //notify waiting threads.
 
     }
@@ -30,9 +34,15 @@ public class TicketPool implements Ticket_pool_operation  {
 
         }
         int Ticket_Number = ticket_list.remove(0); //remove first ticket in list
-        System.out.println("Ticket_Number " + Ticket_Number + " bought from the pool by " + Customer_details + " | " + ticket_list.size() + " Tickets available");
+        String date_time_for_remove=get_Time_Date();
+        System.out.println("Ticket_Number " + Ticket_Number + " bought from the pool by " + Customer_details + " | " + ticket_list.size() + " Tickets available|"+date_time_for_remove+"|");
         notifyAll();//notify waiting threads.
         return Ticket_Number; // return ticket number that sold
+    }
+
+    private String get_Time_Date(){
+        DateTimeFormatter Date_time=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.now().format(Date_time);
     }
 
 
