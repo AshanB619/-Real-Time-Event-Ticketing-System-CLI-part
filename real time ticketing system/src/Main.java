@@ -10,9 +10,39 @@ public class Main {
         List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main,config1);
         List<Customer_details> customer_details_List = get_Customer_Details(scanner_main,config1);
 
-        for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
-        for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
+        List<Thread> vendor_Threads_list = for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
+        List<Thread> customer_Threads_list = for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
 
+        System.out.println("Enter 'STOP' to Exit the system" );
+        while (true) {
+            String input_for_stop=scanner_main.nextLine().toLowerCase();
+            if (input_for_stop.equals("stop")) {
+                for (Thread thread_ven : vendor_Threads_list) {
+                    thread_ven.interrupt();
+                }
+                for (Thread thread_cus: customer_Threads_list) {
+                    thread_cus.interrupt();
+                }
+                break;
+            }
+        }
+
+        for (Thread thread_ven : vendor_Threads_list) {
+            try {
+                thread_ven.join();
+            }catch (InterruptedException e){
+                System.out.println("Error happened when Stopping the Thread");
+            }
+        }
+
+        for (Thread thread_cus: customer_Threads_list) {
+            try {
+                thread_cus.join();
+            }catch (InterruptedException e){
+                System.out.println("Error happened when Stopping the Thread");
+            }
+        }
+        System.out.println("Exit the system successfully");
     }
 
     private static SystemConfig get_ticket_inputs(Scanner scanner_main) {
@@ -222,9 +252,10 @@ public class Main {
     }
 
 
-    private static void for_Vendor_Threads(List<Vendor_details> vendor_details_List,
-                                           Ticket_pool_operation ticket_pool_operation,
-                                           SystemConfig system_config) {
+    private static List<Thread> for_Vendor_Threads(List<Vendor_details> vendor_details_List,
+                                                   Ticket_pool_operation ticket_pool_operation,
+                                                   SystemConfig system_config) {
+        List<Thread>vendor_Threads_list=new ArrayList<>();
         for (Vendor_details vendor_details_for : vendor_details_List) {
             Vendor vendor1 = new Vendor(
                     ticket_pool_operation,
@@ -235,12 +266,15 @@ public class Main {
             );
             Thread vendor_Thread = new Thread(vendor1);
             vendor_Thread.start();
+            vendor_Threads_list.add(vendor_Thread);
         }
+        return vendor_Threads_list;
     }
 
-    private static void for_Customer_Threads(List<Customer_details> customer_details_List,
+    private static List<Thread> for_Customer_Threads(List<Customer_details> customer_details_List,
                                            Ticket_pool_operation ticket_pool_operation,
                                            SystemConfig system_config) {
+        List<Thread>customerThreads_list=new ArrayList<>();
         for (Customer_details customer_details_for : customer_details_List) {
             Customer customer1 = new Customer(
                     ticket_pool_operation,
@@ -252,7 +286,9 @@ public class Main {
             );
             Thread customer_Thread = new Thread(customer1);
             customer_Thread.start();
+            customerThreads_list.add(customer_Thread);
         }
+        return customerThreads_list;
     }
 
 
