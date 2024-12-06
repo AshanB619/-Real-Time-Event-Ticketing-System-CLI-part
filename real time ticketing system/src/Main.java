@@ -1,49 +1,57 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner_main = new Scanner(System.in);
-        SystemConfig config1 = get_ticket_inputs(scanner_main);
-        Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity());
-        List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main,config1);
-        List<Customer_details> customer_details_List = get_Customer_Details(scanner_main,config1);
+        try (BufferedWriter log_file_writer = new BufferedWriter(new FileWriter("log_history.txt"))) {
+            Scanner scanner_main = new Scanner(System.in);
+            SystemConfig config1 = get_ticket_inputs(scanner_main);
+            Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity(), log_file_writer);
+            List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main, config1);
+            List<Customer_details> customer_details_List = get_Customer_Details(scanner_main, config1);
 
-        List<Thread> vendor_Threads_list = for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
-        List<Thread> customer_Threads_list = for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
+            List<Thread> vendor_Threads_list = for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
+            List<Thread> customer_Threads_list = for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
 
-        System.out.println("Enter 'STOP' to Exit the system" );
-        while (true) {
-            String input_for_stop=scanner_main.nextLine().toLowerCase();
-            if (input_for_stop.equals("stop")) {
-                for (Thread thread_ven : vendor_Threads_list) {
-                    thread_ven.interrupt();
+            System.out.println("Enter 'STOP' to Exit the system");
+            while (true) {
+                String input_for_stop = scanner_main.nextLine().toLowerCase();
+                if (input_for_stop.equals("stop")) {
+                    for (Thread thread_ven : vendor_Threads_list) {
+                        thread_ven.interrupt();
+                    }
+                    for (Thread thread_cus : customer_Threads_list) {
+                        thread_cus.interrupt();
+                    }
+                    break;
                 }
-                for (Thread thread_cus: customer_Threads_list) {
-                    thread_cus.interrupt();
+            }
+
+            for (Thread thread_ven : vendor_Threads_list) {
+                try {
+                    thread_ven.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error happened when Stopping the Thread");
                 }
-                break;
             }
-        }
 
-        for (Thread thread_ven : vendor_Threads_list) {
-            try {
-                thread_ven.join();
-            }catch (InterruptedException e){
-                System.out.println("Error happened when Stopping the Thread");
+            for (Thread thread_cus : customer_Threads_list) {
+                try {
+                    thread_cus.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error happened when Stopping the Thread");
+                }
             }
+            System.out.println("Exit the system successfully");
+        } catch (IOException e) {
+            System.out.println("Error when writing in the file : " + e.getMessage());
         }
-
-        for (Thread thread_cus: customer_Threads_list) {
-            try {
-                thread_cus.join();
-            }catch (InterruptedException e){
-                System.out.println("Error happened when Stopping the Thread");
-            }
-        }
-        System.out.println("Exit the system successfully");
     }
+
 
     private static SystemConfig get_ticket_inputs(Scanner scanner_main) {
         SystemConfig config1 = new SystemConfig();

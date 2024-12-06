@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -7,11 +9,13 @@ import java.util.*;
 public class TicketPool implements Ticket_pool_operation  {
     private final List<Integer> ticket_list; //list for store tickets
     private final int max_Ticket_Capacity_For_Pool; //variable for maximum tickets that pool can hold
+    private final BufferedWriter Transaction_writer;
 
 
-    public TicketPool( int maxTickekCapacityForPool) {
+    public TicketPool( int maxTickekCapacityForPool,BufferedWriter Transaction_writer) {
         this.ticket_list = new ArrayList<>(maxTickekCapacityForPool);
         this.max_Ticket_Capacity_For_Pool = maxTickekCapacityForPool;
+        this.Transaction_writer = Transaction_writer;
     }
 
 
@@ -24,6 +28,7 @@ public class TicketPool implements Ticket_pool_operation  {
         ticket_list.add(Ticket_Number); //add ticket into list
         String date_time_for_add=get_Time_Date();
         System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available |"+date_time_for_add+"|");
+        LOG_writer("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available |"+date_time_for_add+"|");
         notifyAll(); //notify waiting threads.
 
     }
@@ -36,6 +41,7 @@ public class TicketPool implements Ticket_pool_operation  {
         int Ticket_Number = ticket_list.remove(0); //remove first ticket in list
         String date_time_for_remove=get_Time_Date();
         System.out.println("Ticket_Number " + Ticket_Number + " bought from the pool by " + Customer_details + " | " + ticket_list.size() + " Tickets available|"+date_time_for_remove+"|");
+        LOG_writer("Ticket_Number " + Ticket_Number + " bought from the pool by " + Customer_details + " | " + ticket_list.size() + " Tickets available|"+date_time_for_remove+"|");
         notifyAll();//notify waiting threads.
         return Ticket_Number; // return ticket number that sold
     }
@@ -43,6 +49,14 @@ public class TicketPool implements Ticket_pool_operation  {
     private String get_Time_Date(){
         DateTimeFormatter Date_time=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(Date_time);
+    }
+
+    private void LOG_writer(String message){
+        try {
+            Transaction_writer.write(message+"\n");
+        }catch (IOException e){
+            System.out.println("Error while writing file");
+        }
     }
 
 
