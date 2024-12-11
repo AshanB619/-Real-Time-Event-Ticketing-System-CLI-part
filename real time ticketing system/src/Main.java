@@ -8,22 +8,32 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         try (BufferedWriter log_file_writer = new BufferedWriter(new FileWriter("log_history.txt"))) {
+            // Initialize scanner for user input
             Scanner scanner_main = new Scanner(System.in);
+            // Get system configuration inputs from the user
             SystemConfig config1 = get_ticket_inputs(scanner_main);
+            // Create a ticket pool operation with maximum ticket capacity and log writer
             Ticket_pool_operation ticket_pool_operation = new TicketPool(config1.getMaximum_Ticket_Capacity(), log_file_writer);
+            // Get vendor details from the user
             List<Vendor_details> vendor_details_List = get_Vendor_Details(scanner_main, config1);
+            // Get customer details from the user
             List<Customer_details> customer_details_List = get_Customer_Details(scanner_main, config1);
 
+            // Create and start threads for vendors
             List<Thread> vendor_Threads_list = for_Vendor_Threads(vendor_details_List, ticket_pool_operation, config1);
+            // Create and start threads for customers
             List<Thread> customer_Threads_list = for_Customer_Threads(customer_details_List, ticket_pool_operation, config1);
 
+            // Allow user to stop the system by typing 'STOP'
             System.out.println("Enter 'STOP' to Exit the system");
             while (true) {
                 String input_for_stop = scanner_main.nextLine().toLowerCase();
                 if (input_for_stop.equals("stop")) {
+                    // Interrupt all vendor threads
                     for (Thread thread_ven : vendor_Threads_list) {
                         thread_ven.interrupt();
                     }
+                    // Interrupt all customer threads
                     for (Thread thread_cus : customer_Threads_list) {
                         thread_cus.interrupt();
                     }
@@ -31,6 +41,8 @@ public class Main {
                 }
             }
 
+
+            // Wait for all vendor threads to finish
             for (Thread thread_ven : vendor_Threads_list) {
                 try {
                     thread_ven.join();
@@ -38,7 +50,7 @@ public class Main {
                     System.out.println("Error happened when Stopping the Thread");
                 }
             }
-
+            // Wait for all customer threads to finish
             for (Thread thread_cus : customer_Threads_list) {
                 try {
                     thread_cus.join();
@@ -52,10 +64,11 @@ public class Main {
         }
     }
 
-
+    // Method to get system configuration inputs from the user
     private static SystemConfig get_ticket_inputs(Scanner scanner_main) {
         SystemConfig config1 = new SystemConfig();
 
+        // Get total number of tickets to sell
         while (true) {
             try {
                 System.out.println("Enter total number of tickets to sell:");
@@ -71,6 +84,7 @@ public class Main {
             }
         }
 
+        // Get ticket release rate
         while (true) {
             try {
                 System.out.println("Enter Release rate (per second):");
@@ -86,6 +100,7 @@ public class Main {
             }
         }
 
+        // Get customer retrieval rate
         while (true) {
             try {
                 System.out.println("Enter Retrieve rate (per second):");
@@ -101,6 +116,7 @@ public class Main {
             }
         }
 
+        // Get maximum ticket capacity
         while (true) {
             try {
                 System.out.println("Enter maximum ticket capacity that the system can handle:");
@@ -119,13 +135,16 @@ public class Main {
         return config1;
     }
 
+    // Method to get vendor details from the user
     private static List<Vendor_details> get_Vendor_Details(Scanner scanner_main,SystemConfig config2) {
         List<Vendor_details> vendor_details_List = new ArrayList<>();
         boolean for_more_vendors = true;
 
+        // Loop to add multiple vendors
         while (for_more_vendors) {
             Vendor_details vendor_details = new Vendor_details();
 
+            // Get vendor name
             while (true) {
                 System.out.println("Enter Vendor Name:");
                 String vendor_name = scanner_main.nextLine();
@@ -137,6 +156,7 @@ public class Main {
                 break;
             }
 
+            // Get vendor ID
             while (true) {
                 try {
                     System.out.println("Enter Vendor ID:");
@@ -148,6 +168,7 @@ public class Main {
                 }
             }
 
+            // Get total tickets vendor wants to sell
             while (true) {
                 try {
                     System.out.println("Total Ticket Remaining "+config2.getTotal_Number_of_Tickets());
@@ -171,6 +192,7 @@ public class Main {
 
             vendor_details_List.add(vendor_details);
 
+            // Check if user wants to add another vendor
             while (true) {
                 System.out.println("Do you want to add another vendor|yes/no|");
                 String add_more_vendors = scanner_main.nextLine().toLowerCase();
@@ -188,13 +210,16 @@ public class Main {
         return vendor_details_List;
     }
 
+    // Method to get customer details from the user
     private static List<Customer_details> get_Customer_Details(Scanner scanner_main, SystemConfig config) {
         List<Customer_details> customer_details_List = new ArrayList<>();
         boolean for_more_customers = true;
 
+        // Loop to add multiple customers
         while (for_more_customers) {
             Customer_details customer_details = new Customer_details();
 
+            // Get customer name
             while (true) {
                 System.out.println("Enter Customer Name:");
                 String customer_name = scanner_main.nextLine();
@@ -206,6 +231,7 @@ public class Main {
                 break;
             }
 
+            // Get customer ID
             while (true) {
                 try {
                     System.out.println("Enter Customer ID:");
@@ -217,6 +243,7 @@ public class Main {
                 }
             }
 
+            // Get total tickets customer wants to buy
             while (true) {
                 try {
                     int Max_ticket_for_customer= config.getTicket_Availability_for_customer();
@@ -243,6 +270,7 @@ public class Main {
 
             customer_details_List.add(customer_details);
 
+            // Check if user wants to add another customer
             while (true) {
                 System.out.println("Do you want to add another Customer|yes/no|");
                 String add_more_customers = scanner_main.nextLine().toLowerCase();
@@ -259,7 +287,7 @@ public class Main {
         return customer_details_List;
     }
 
-
+    // Method to create and start vendor threads
     private static List<Thread> for_Vendor_Threads(List<Vendor_details> vendor_details_List,
                                                    Ticket_pool_operation ticket_pool_operation,
                                                    SystemConfig system_config) {
@@ -279,9 +307,10 @@ public class Main {
         return vendor_Threads_list;
     }
 
+    // Method to create and start customer threads
     private static List<Thread> for_Customer_Threads(List<Customer_details> customer_details_List,
-                                           Ticket_pool_operation ticket_pool_operation,
-                                           SystemConfig system_config) {
+                                                     Ticket_pool_operation ticket_pool_operation,
+                                                     SystemConfig system_config) {
         List<Thread>customerThreads_list=new ArrayList<>();
         for (Customer_details customer_details_for : customer_details_List) {
             Customer customer1 = new Customer(
