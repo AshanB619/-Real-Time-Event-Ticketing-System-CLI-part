@@ -10,6 +10,7 @@ public class TicketPool implements Ticket_pool_operation  {
     private final List<Integer> ticket_list; //list for store tickets
     private final int max_Ticket_Capacity_For_Pool; //variable for maximum tickets that pool can hold
     private final BufferedWriter Transaction_writer; //for logging transactions
+    private static int count_for_ticket_number=1;//for ticket count
 
     // Constructor to initialize the TicketPool with a maximum capacity and transaction writer
     public TicketPool( int maxTickekCapacityForPool,BufferedWriter Transaction_writer) {
@@ -25,6 +26,7 @@ public class TicketPool implements Ticket_pool_operation  {
         while(ticket_list.size() >= max_Ticket_Capacity_For_Pool) { //check current size of ticket list
             wait(); // if current size is grater than max capacity put the current thread into waiting list
         }
+        Ticket_Number = count_for_ticket_number++;
         ticket_list.add(Ticket_Number); //add ticket into list
         String date_time_for_add=get_Time_Date(); // get current timestamp for logging
         System.out.println("Ticket_Number " + Ticket_Number + " added to the pool by " + Vendor_Details + " | " + ticket_list.size() + " Tickets available |"+date_time_for_add+"|");
